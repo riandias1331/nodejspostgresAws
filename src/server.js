@@ -5,11 +5,16 @@ import pool from './config/db.js';
 import routes from './routes/users.js';
 import errorHandler  from './middlewares/errorhandler.js';
 import createUserTable from './data/createtable.js';
+import path from 'path';
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3333  ;
 
+
+// Configurar EJS como template engine
+app.set('view engine', 'ejs');
+app.set('views', path.resolve('./src', 'views'));
 
 // Middlewares
 app.use(express.json());
@@ -20,9 +25,14 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// 
+app.get('/', (req, res) => {  
+  res.render('index');
+});
+
 // Database PostgreSql
 createUserTable()
-app.get('/', async(req, res) => {  // Teste conexão Postgres
+app.get('/testpg', async(req, res) => {  // Teste conexão Postgres
     const result = await pool.query("SELECT current_database()")
     res.send(`The database name is : ${result.rows[0].current_database}`)
 })

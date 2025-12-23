@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
 import pool from "../config/db.js";
+import neonPool  from "../config/db.js";
 import jwt from "jsonwebtoken";
 const jwt_secret = process.env.JWT_SECRET;
 
 export const getAllUsersService = async () => {
     try {
-        const result = await pool.query("SELECT * FROM users");
+        const result = await neonPool.query("SELECT * FROM users");
         console.log("Result rows:", result.rows);
         return result.rows;
     } catch (error) {
@@ -16,7 +17,7 @@ export const getAllUsersService = async () => {
 
 export const getUserByIdService = async (id) => {
     try {
-        const result = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+        const result = await neonPool.query("SELECT * FROM users WHERE id = $1", [id]);
         return result.rows[0] || null;
     } catch (error) {
         console.error(`Erro ao buscar usuário com ID ${id}:`, error);
@@ -27,7 +28,7 @@ export const getUserByIdService = async (id) => {
 export const createUserService = async (name, email, password) => {
   try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await pool.query(
+        const result = await neonPool.query(
             "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
             [name, email, hashedPassword]
         );
@@ -46,7 +47,7 @@ export const createUserService = async (name, email, password) => {
 
 export const updateUserService = async (id, name, email) => {
     try {
-        const result = await pool.query(
+        const result = await neonPool.query(
             "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *",
             [name, email, id]
         );
@@ -59,7 +60,7 @@ export const updateUserService = async (id, name, email) => {
 
 export const deleteUserService = async (id) => {
     try {
-        const result = await pool.query(
+        const result = await neonPool.query(
             "DELETE FROM users WHERE id = $1 RETURNING *",
             [id]
         );
@@ -76,7 +77,7 @@ export const deleteUserAllService = async () => {
             throw new Error("Operation not allowed in production");
         }
 
-        const result = await pool.query("DELETE FROM users RETURNING *");
+        const result = await neonPool.query("DELETE FROM users RETURNING *");
         return {
             count: result.rowCount,
             users: result.rows,

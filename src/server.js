@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import pool from './config/db.js';
+import {  neonPool } from "./config/db.js";
 import routes from './routes/users.js';
 import errorHandler  from './middlewares/errorhandler.js';
 import createUserTable from './data/createtable.js';
@@ -40,17 +40,27 @@ app.get('/testpg', async(req, res) => {  // Teste conexão Postgres
 
 
 // test database connection
-app.get('/db-test', async (req, res) => {
-  try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT NOW()');
-    res.json(result.rows);
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Database error');
-  }
-});
+// app.get('/db-test', async (req, res) => {
+//   try {
+//     const client = await pool.connect();
+//     const result = await client.query('SELECT NOW()');
+//     res.json(result.rows);
+//     client.release();
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Database error');
+//   }
+// });
+app.get('/', async(req, res) => {
+    // const result = await localPool.query("SELECT current_database()")
+    const result2 = await neonPool.query("SELECT current_database()")
+    // res.send(`The database name is : ${result.rows[0].current_database}`)
+    res.json({
+        // local: result.rows[0].current_database,
+        neon: result2.rows[0].current_database
+    });
+
+})
 
 //// Routes
 app.use(routes)

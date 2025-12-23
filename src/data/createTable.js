@@ -1,4 +1,6 @@
 import pool from "../config/db.js";
+import { neonPool } from "../config/db.js";
+
 
 const createUsersTable = async () => {
     const query = `
@@ -12,7 +14,7 @@ const createUsersTable = async () => {
     `;
 
     try {
-        await pool.query(query);
+        await neonPool.query(query);
         console.log("users created successfully");
     } catch (error) {
         console.error("Error creating Users table:", error);

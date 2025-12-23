@@ -3,6 +3,10 @@ dotenv.config();
 
 import pkg from 'pg';
 const { Pool } = pkg;
+const neonPool = new Pool({
+    connectionString: process.env.NEON_DB_URL,
+    ssl: { rejectUnauthorized: false }
+});
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -16,6 +20,13 @@ pool.on('connect', () => {
   console.log('Connected to PostgreSQL');
 });
 
+
+
+neonPool.on('connect', () => {
+    console.log('Connected to the Neon database');
+});
+
 export default pool;
+export { neonPool };
 
 
